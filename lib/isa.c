@@ -27,7 +27,7 @@ void _ADD(uint16_t* dst, const uint16_t *v1, const uint16_t *v2, uint32_t *flags
 
     if (*dst >> 15 == 1) *flags ^= 1 << 0x10;
 
-    if (*dst == 0) *flags ^= 1 << 0x100;
+    if (*dst == 0) *flags ^= 1 << 0x18;
     
 }
 

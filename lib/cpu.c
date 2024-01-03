@@ -116,7 +116,7 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                     R3 = &V2;
                 break;
             }
-            _ADD(R1, R2, R3, &cpu->flags);
+            _ADD(R1, R2, R3, (uint32_t*) &cpu->flags);
         break;
         case SUB:
             // reg, v1, v2
@@ -155,7 +155,7 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                     R3 = &V2;
                 break;
             }
-            _SUB(R1, R2, R3, &cpu->flags);
+            _SUB(R1, R2, R3, (uint32_t*) &cpu->flags);
         break;
         case NUL:
             illegal_instruction(cpu, mem);
