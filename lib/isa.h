@@ -12,11 +12,15 @@
 
 #define MOV 0x0001
 #define ADD 0x0002
+#define SUB 0x0003
+
 #define HLT 0xFAFB
 #define NUL 0x0000
 
 
 void _MOV(uint16_t* dst, uint16_t _n);
-void _ADD(uint16_t* dst, const uint16_t *v1, const uint16_t *v2);
+void _ADD(uint16_t* dst, const uint16_t *v1, const uint16_t *v2, uint32_t *flags);
+void _SUB(uint16_t* dst, const uint16_t *v1, uint16_t *v2, uint32_t *flags);
+
 
 #endif //ISA_H

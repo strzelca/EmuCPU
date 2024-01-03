@@ -28,9 +28,9 @@ void destroy_mem(mem_t *mem) {
 }
 
 void check_mem(const mem_t *mem) {
-    printf_s("CHECK MEMORY\n");
+    printf("CHECK MEMORY\n");
     for (int i = 0; i < mem->size; i++)
-        if (*(mem->mem+i) != 0) printf_s("Found 0x%04x at %p\n", *(mem->mem+i), mem->mem+i);
+        if (*(mem->mem+i) != 0) printf("Found 0x%04x at %p\n", *(mem->mem+i), mem->mem+i);
 
-    printf_s("OK\n");
+    printf("OK\n");
 }

@@ -13,6 +13,13 @@ typedef struct _cpu {
       uint16_t A;
       uint16_t B;
       uint16_t PC;
+      union flags {
+              uint8_t Z;
+              uint8_t S;
+              uint8_t O;
+              uint8_t C;
+              uint32_t flags;
+      } flags;
 } cpu_t;
 
 cpu_t *new_cpu();

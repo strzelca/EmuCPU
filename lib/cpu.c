@@ -24,32 +24,34 @@ void destroy_cpu(cpu_t *cpu) {
 
 
 void print_cpu_status(const cpu_t *cpu) {
-    printf_s("CPU STATUS\n");
-    printf_s("A  -> 0x%04x\n", cpu->A);
-    printf_s("B  -> 0x%04x\n", cpu->B);
-    printf_s("PC -> 0x%04x\n", cpu->PC);
+    printf("CPU STATUS\n");
+    printf("A  -> 0x%04x\n", cpu->A);
+    printf("B  -> 0x%04x\n", cpu->B);
+    printf("PC -> 0x%04x\n", cpu->PC);
+    printf("FLAGS -> 0x%08x\n", cpu->flags.flags);
 }
 
 void illegal_instruction(const cpu_t *cpu, const mem_t *mem) {
-    printf_s("Illegal instruction format\n");
-    printf_s("DUMP\n");
-    printf_s("--------------------------\n");
+    printf("Illegal instruction format\n");
+    printf("DUMP\n");
+    printf("--------------------------\n");
     print_cpu_status(cpu);
-    printf_s("--------------------------\n");
+    printf("--------------------------\n");
     for(int i = -2; i <= 2; i++)
         if(cpu->PC-1+i >= 0) {
-            if(i == 0) printf_s("0x%04x : 0x%04x <--\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
-            else printf_s("0x%04x : 0x%04x\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
+            if(i == 0) printf("0x%04x : 0x%04x <--\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
+            else printf("0x%04x : 0x%04x\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
         }
 
     exit(1);
 }
 
 void fde(cpu_t *cpu, const mem_t *mem) {
-    uint16_t *R1 = malloc(sizeof(uint16_t));
-    uint16_t *R2 = malloc(sizeof(uint16_t));
-    uint16_t *R3 = malloc(sizeof(uint16_t));
+    uint16_t *R1 = NULL;
+    uint16_t *R2 = NULL;
+    uint16_t *R3 = NULL;
     uint16_t V1 = 0;
+    uint16_t V2 = 0;
     if (cpu->PC > mem->size) illegal_instruction(cpu, mem);
     switch(mem->mem[cpu->PC++]) {
         case MOV:
@@ -72,7 +74,7 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                     V1 = cpu->B;
                 break;
                 default:
-                    V1 = cpu->PC-1;
+                    V1 = mem->mem[cpu->PC-1];
                 break;
             }
             _MOV(R1, V1);
@@ -98,7 +100,8 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                     R2 = &cpu->B;
                 break;
                 default:
-                    *R2 = cpu->PC-1;
+                    V1 = mem->mem[cpu->PC-1];
+                    R2 = &V1;
                 break;
             }
             switch (mem->mem[cpu->PC++]) {
@@ -109,10 +112,50 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                     R3 = &cpu->B;
                 break;
                 default:
-                    *R3 = cpu->PC-1;
+                    V2 = mem->mem[cpu->PC-1];
+                    R3 = &V2;
                 break;
             }
-            _ADD(R1, R2, R3);
+            _ADD(R1, R2, R3, &cpu->flags);
+        break;
+        case SUB:
+            // reg, v1, v2
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R1 = &cpu->A;
+                break;
+                case REGB:
+                    R1 = &cpu->B;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R2 = &cpu->A;
+                break;
+                case REGB:
+                    R2 = &cpu->B;
+                break;
+                default:
+                    V1 = mem->mem[cpu->PC-1];
+                    R2 = &V1;
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R3 = &cpu->A;
+                break;
+                case REGB:
+                    R3 = &cpu->B;
+                break;
+                default:
+                    V2 = mem->mem[cpu->PC-1];
+                    R3 = &V2;
+                break;
+            }
+            _SUB(R1, R2, R3, &cpu->flags);
         break;
         case NUL:
             illegal_instruction(cpu, mem);
@@ -121,10 +164,6 @@ void fde(cpu_t *cpu, const mem_t *mem) {
             illegal_instruction(cpu, mem);
             break;
     }
-
-    free(R1);
-    free(R2);
-    free(R3);
 }
 
 
