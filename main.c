@@ -2,6 +2,7 @@
 
 #include "lib/logicb.h"
 #include "lib/cpu.h"
+#include "lib/isa.h"
 
 int main() {
     logic_b_t *logicb = new_logicb();
@@ -9,7 +10,13 @@ int main() {
     print_logicb(logicb);
 
 
-    const uint16_t prog[] = {0x0001, 0xAFFF, 0x0008, 0x0002, 0xBFFF, 0xAFFF, 0x0008, 0x0003, 0xAFFF, 0xAFFF, 0x0009, 0x0002, 0xAFFF, 0xAFFF, 0x0001, 0xFAFB};
+    const uint16_t prog[] = {
+        ADD, REGA, REGA, 0x0008, 
+        DIV, REGB, REGA, 0x0004, 
+        SUB, REGA, REGA, 0x0004, 
+        ADD, REGA, REGA, 0x0008,
+        0xFAFB
+    };
 
     memcpy(logicb->mem->mem, prog, sizeof(prog));
 

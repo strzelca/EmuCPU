@@ -25,8 +25,8 @@ void destroy_cpu(cpu_t *cpu) {
 
 void print_cpu_status(const cpu_t *cpu) {
     printf("CPU STATUS\n");
-    printf("A  -> 0x%04x\n", cpu->A);
-    printf("B  -> 0x%04x\n", cpu->B);
+    printf("A  -> 0x%04x (%hi)\n", cpu->A, cpu->A);
+    printf("B  -> 0x%04x (%d)\n", cpu->B, cpu->B);
     printf("PC -> 0x%04x\n", cpu->PC);
     printf("FLAGS -> 0x%08x\n", cpu->flags.flags);
 }
@@ -156,6 +156,84 @@ void fde(cpu_t *cpu, const mem_t *mem) {
                 break;
             }
             _SUB(R1, R2, R3, (uint32_t*) &cpu->flags);
+        break;
+        case MUL:
+            // reg, v1, v2
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R1 = &cpu->A;
+                break;
+                case REGB:
+                    R1 = &cpu->B;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R2 = &cpu->A;
+                break;
+                case REGB:
+                    R2 = &cpu->B;
+                break;
+                default:
+                    V1 = mem->mem[cpu->PC-1];
+                    R2 = &V1;
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R3 = &cpu->A;
+                break;
+                case REGB:
+                    R3 = &cpu->B;
+                break;
+                default:
+                    V2 = mem->mem[cpu->PC-1];
+                    R3 = &V2;
+                break;
+            }
+            _MUL(R1, R2, R3, (uint32_t*) &cpu->flags);
+        break;
+        case DIV:
+            // reg, v1, v2
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R1 = &cpu->A;
+                break;
+                case REGB:
+                    R1 = &cpu->B;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R2 = &cpu->A;
+                break;
+                case REGB:
+                    R2 = &cpu->B;
+                break;
+                default:
+                    V1 = mem->mem[cpu->PC-1];
+                    R2 = &V1;
+                break;
+            }
+            switch (mem->mem[cpu->PC++]) {
+                case REGA:
+                    R3 = &cpu->A;
+                break;
+                case REGB:
+                    R3 = &cpu->B;
+                break;
+                default:
+                    V2 = mem->mem[cpu->PC-1];
+                    R3 = &V2;
+                break;
+            }
+            _DIV(R1, R2, R3, (uint32_t*) &cpu->flags);
         break;
         case NUL:
             illegal_instruction(cpu, mem);
