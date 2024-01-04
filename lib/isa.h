@@ -20,11 +20,11 @@
 #define NUL 0x0000
 
 
-void _MOV(uint16_t* dst, uint16_t _n);
-void _ADD(uint16_t* dst, const uint16_t *v1, const uint16_t *v2, uint32_t *flags);
-void _SUB(uint16_t* dst, const uint16_t *v1, uint16_t *v2, uint32_t *flags);
-void _MUL(uint16_t* dst, const uint16_t *v1, uint16_t *v2, uint32_t *flags);
-void _DIV(uint16_t* dst, uint16_t *v1, uint16_t *v2, uint32_t *flags);
+void _MOV(uint16_t *restrict dst, uint16_t _n);
+void _ADD(uint16_t *restrict dst, const uint16_t *restrict v1, const uint16_t *restrict v2, uint32_t *restrict flags);
+void _SUB(uint16_t *restrict dst, const uint16_t *restrict v1, uint16_t *restrict v2, uint32_t *restrict flags);
+void _MUL(uint16_t *restrict dst, const uint16_t *restrict v1, uint16_t *restrict v2, uint32_t *restrict flags);
+void _DIV(uint16_t *restrict dst, uint16_t *restrict v1, uint16_t *restrict v2, uint32_t *restrict flags);
 
 
 

@@ -12,9 +12,9 @@ int main() {
 
     const uint16_t prog[] = {
         ADD, REGA, REGA, 0x0008, 
-        DIV, REGB, REGA, 0x0004, 
-        SUB, REGA, REGA, 0x0004, 
-        ADD, REGA, REGA, 0x0008,
+        DIV, REGB, REGA, 0x0004,
+        MUL, REGB, REGB, 0x0002,
+        SUB, REGA, REGA, REGB,
         0xFAFB
     };
 
