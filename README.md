@@ -1,6 +1,8 @@
 # EmuCPU
 
-![EmuCPU](https://raw.githubusercontent.com/strzelca/EmuCPU/main/.github/imgs/diagram.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/strzelca/EmuCPU/main/.github/imgs/diagram.png" width=500>
+</p>
 
 ## What is EmuCPU?
 EmuCPU is an emulator for a CPU I designed. 
