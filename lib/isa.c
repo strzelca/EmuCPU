@@ -24,7 +24,7 @@ void _ADD(uint16_t *restrict dst, const uint16_t *restrict v1, const uint16_t *r
     }
 
     if(*dst > 0 && *dst < 0x7FFF && _v1 > 0x7FFF) *flags ^= 1 << 0x8;
-    if (*dst >> 15 == 1) *flags ^= 1 << 0x10;
+    
     if (*dst == 0) *flags ^= 1 << 0x18;
     
 }
@@ -57,7 +57,7 @@ void _MUL(uint16_t *restrict dst, const uint16_t *restrict v1, uint16_t *restric
 
 void _DIV(uint16_t *restrict dst, uint16_t *restrict v1, uint16_t *restrict v2, uint32_t *restrict flags) {
     uint32_t _save_flags;
-    while(*v1 > 0 || ((*flags >> 0x10) & 0x001) == 1 && (*flags >> 0x18) == 1) {
+    while(*v1 > 0 && *v1 < 0x7FFF || ((*flags >> 0x10) & 0x001) == 1 && (*flags >> 0x18) == 1) {
         _SUB(v1, v1, v2, flags);
         _save_flags = *flags;
         _INC(dst, flags);

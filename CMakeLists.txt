@@ -3,6 +3,7 @@ project(EmuCPU C)
 
 set(CMAKE_C_STANDARD 11)
 
+
 add_executable(EmuCPU main.c
         lib/mem.c
         lib/mem.h
@@ -14,3 +15,5 @@ add_executable(EmuCPU main.c
         lib/utils.h
         lib/isa.c
         lib/isa.h)
+
+target_link_libraries(EmuCPU m)
