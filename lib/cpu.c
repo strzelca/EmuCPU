@@ -25,9 +25,11 @@ void destroy_cpu(cpu_t *cpu) {
 
 void print_cpu_status(const cpu_t *cpu) {
     printf("CPU STATUS\n");
-    printf("A  -> 0x%04x (%hi)\n", cpu->A, cpu->A);
-    printf("B  -> 0x%04x (%d)\n", cpu->B, cpu->B);
-    printf("PC -> 0x%04x\n", cpu->PC);
+    printf("A  -> 0x%04x (%hi)\n", cpu->a, cpu->a);
+    printf("B  -> 0x%04x (%hi)\n", cpu->b, cpu->b);
+    printf("pc -> 0x%04x\n", cpu->pc);
+    printf("SP -> 0x%04x\n", cpu->sp);
+    printf("BP -> 0x%04x\n", cpu->bp);
     printf("FLAGS -> 0x%08x\n", cpu->flags.flags);
 }
 
@@ -38,81 +40,111 @@ void illegal_instruction(const cpu_t *cpu, const mem_t *mem) {
     print_cpu_status(cpu);
     printf("--------------------------\n");
     for(int i = -2; i <= 2; i++)
-        if(cpu->PC-1+i >= 0) {
-            if(i == 0) printf("0x%04x : 0x%04x <--\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
-            else printf("0x%04x : 0x%04x\n", cpu->PC-1+i, mem->mem[cpu->PC-1+i]);
+        if(cpu->pc-1+i >= 0) {
+            if(i == 0) printf("0x%04x : 0x%04x <--\n", cpu->pc-1+i, mem->mem[cpu->pc-1+i]);
+            else printf("0x%04x : 0x%04x\n", cpu->pc-1+i, mem->mem[cpu->pc-1+i]);
         }
 
     exit(1);
 }
 
-void fde(cpu_t *cpu, const mem_t *mem) {
+void fde(cpu_t *cpu, mem_t *mem) {
     uint16_t *R1 = NULL;
     uint16_t *R2 = NULL;
     uint16_t *R3 = NULL;
     uint16_t V1 = 0;
     uint16_t V2 = 0;
-    if (cpu->PC > mem->size) illegal_instruction(cpu, mem);
-    switch(mem->mem[cpu->PC++]) {
+    if (cpu->pc > mem->size) illegal_instruction(cpu, mem);
+    switch(mem->mem[cpu->pc++]) {
         case MOV:
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R1 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
                 break;
-                case REGB:
-                    R1 = &cpu->B;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
                 break;
                 default:
                     illegal_instruction(cpu, mem);
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    V1 = cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    V1 = cpu->a;
                 break;
-                case REGB:
-                    V1 = cpu->B;
+                case RB:
+                    V1 = cpu->b;
+                break;
+                case SP:
+                    V1 = cpu->sp;
+                break;
+                case BP:
+                    V1 = cpu->bp;
                 break;
                 default:
-                    V1 = mem->mem[cpu->PC-1];
+                    V1 = mem->mem[cpu->pc-1];
                 break;
             }
             _MOV(R1, V1);
         break;
         case ADD:
             // reg, v1, v2
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R1 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
                 break;
-                case REGB:
-                    R1 = &cpu->B;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
                 break;
                 default:
                     illegal_instruction(cpu, mem);
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R2 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R2 = &cpu->a;
                 break;
-                case REGB:
-                    R2 = &cpu->B;
+                case RB:
+                    R2 = &cpu->b;
+                break;
+                case SP:
+                    R2 = &cpu->sp;
+                break;
+                case BP:
+                    R2 = &cpu->bp;
                 break;
                 default:
-                    V1 = mem->mem[cpu->PC-1];
+                    V1 = mem->mem[cpu->pc-1];
                     R2 = &V1;
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R3 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R3 = &cpu->a;
                 break;
-                case REGB:
-                    R3 = &cpu->B;
+                case RB:
+                    R3 = &cpu->b;
+                break;
+                case SP:
+                    R3 = &cpu->sp;
+                break;
+                case BP:
+                    R3 = &cpu->bp;
                 break;
                 default:
-                    V2 = mem->mem[cpu->PC-1];
+                    V2 = mem->mem[cpu->pc-1];
                     R3 = &V2;
                 break;
             }
@@ -120,38 +152,56 @@ void fde(cpu_t *cpu, const mem_t *mem) {
         break;
         case SUB:
             // reg, v1, v2
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R1 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
                 break;
-                case REGB:
-                    R1 = &cpu->B;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
                 break;
                 default:
                     illegal_instruction(cpu, mem);
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R2 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R2 = &cpu->a;
                 break;
-                case REGB:
-                    R2 = &cpu->B;
+                case RB:
+                    R2 = &cpu->b;
+                break;
+                case SP:
+                    R2 = &cpu->sp;
+                break;
+                case BP:
+                    R2 = &cpu->bp;
                 break;
                 default:
-                    V1 = mem->mem[cpu->PC-1];
+                    V1 = mem->mem[cpu->pc-1];
                     R2 = &V1;
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R3 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R3 = &cpu->a;
                 break;
-                case REGB:
-                    R3 = &cpu->B;
+                case RB:
+                    R3 = &cpu->b;
+                break;
+                case SP:
+                    R3 = &cpu->sp;
+                break;
+                case BP:
+                    R3 = &cpu->bp;
                 break;
                 default:
-                    V2 = mem->mem[cpu->PC-1];
+                    V2 = mem->mem[cpu->pc-1];
                     R3 = &V2;
                 break;
             }
@@ -159,38 +209,56 @@ void fde(cpu_t *cpu, const mem_t *mem) {
         break;
         case MUL:
             // reg, v1, v2
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R1 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
                 break;
-                case REGB:
-                    R1 = &cpu->B;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
                 break;
                 default:
                     illegal_instruction(cpu, mem);
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R2 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R2 = &cpu->a;
                 break;
-                case REGB:
-                    R2 = &cpu->B;
+                case RB:
+                    R2 = &cpu->b;
+                break;
+                case SP:
+                    R2 = &cpu->sp;
+                break;
+                case BP:
+                    R2 = &cpu->bp;
                 break;
                 default:
-                    V1 = mem->mem[cpu->PC-1];
+                    V1 = mem->mem[cpu->pc-1];
                     R2 = &V1;
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R3 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R3 = &cpu->a;
                 break;
-                case REGB:
-                    R3 = &cpu->B;
+                case RB:
+                    R3 = &cpu->b;
+                break;
+                case SP:
+                    R3 = &cpu->sp;
+                break;
+                case BP:
+                    R3 = &cpu->bp;
                 break;
                 default:
-                    V2 = mem->mem[cpu->PC-1];
+                    V2 = mem->mem[cpu->pc-1];
                     R3 = &V2;
                 break;
             }
@@ -198,42 +266,135 @@ void fde(cpu_t *cpu, const mem_t *mem) {
         break;
         case DIV:
             // reg, v1, v2
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R1 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
                 break;
-                case REGB:
-                    R1 = &cpu->B;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
                 break;
                 default:
                     illegal_instruction(cpu, mem);
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R2 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R2 = &cpu->a;
                 break;
-                case REGB:
-                    R2 = &cpu->B;
+                case RB:
+                    R2 = &cpu->b;
+                break;
+                case SP:
+                    R2 = &cpu->sp;
+                break;
+                case BP:
+                    R2 = &cpu->bp;
                 break;
                 default:
-                    V1 = mem->mem[cpu->PC-1];
+                    V1 = mem->mem[cpu->pc-1];
                     R2 = &V1;
                 break;
             }
-            switch (mem->mem[cpu->PC++]) {
-                case REGA:
-                    R3 = &cpu->A;
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R3 = &cpu->a;
                 break;
-                case REGB:
-                    R3 = &cpu->B;
+                case RB:
+                    R3 = &cpu->b;
+                break;
+                case SP:
+                    R3 = &cpu->sp;
+                break;
+                case BP:
+                    R3 = &cpu->bp;
                 break;
                 default:
-                    V2 = mem->mem[cpu->PC-1];
+                    V2 = mem->mem[cpu->pc-1];
                     R3 = &V2;
                 break;
             }
             _DIV(R1, R2, R3, (uint32_t*) &cpu->flags);
+        break;
+        case PUSH:
+            // push r1
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
+                break;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            switch (_PUSH(R1, &cpu->bp, mem)) {
+            case 0:
+                break;
+            default:
+                illegal_instruction(cpu, mem);
+                break;
+            }
+        break;
+        case POP:
+            // push r1
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
+                break;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            switch (_POP(R1, &cpu->bp, mem)){
+            case 0:
+                break;
+            default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+        break;
+        case ALIGN:
+            // push r1
+            switch (mem->mem[cpu->pc++]) {
+                case RA:
+                    R1 = &cpu->a;
+                break;
+                case RB:
+                    R1 = &cpu->b;
+                break;
+                case SP:
+                    R1 = &cpu->sp;
+                break;
+                case BP:
+                    R1 = &cpu->bp;
+                break;
+                default:
+                    illegal_instruction(cpu, mem);
+                break;
+            }
+            _ALIGN(R1, mem);
         break;
         case NUL:
             illegal_instruction(cpu, mem);
@@ -247,7 +408,7 @@ void fde(cpu_t *cpu, const mem_t *mem) {
 
 
 void start(cpu_t *cpu, const mem_t *mem) {
-    while (mem->mem[cpu->PC] != HLT || mem->mem[cpu->PC] == NUL) {
+    while (mem->mem[cpu->pc] != HLT || mem->mem[cpu->pc] == NUL) {
         fde(cpu, mem);
     }
 }

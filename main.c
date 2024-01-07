@@ -7,21 +7,22 @@
 int main() {
     logic_b_t *logicb = new_logicb();
 
-    print_logicb(logicb);
-
-
     const uint16_t prog[] = {
-        ADD, REGA, REGA, 0x0008, 
-        DIV, REGB, REGA, 0x0004,
-        MUL, REGB, REGB, 0x0002,
-        SUB, REGA, REGA, REGB,
+        ALIGN, SP,
+        MOV, BP, SP,
+        SUB, BP, BP, 0x0004,
+        ADD, RA, RA, 0x0008, 
+        DIV, RB, RA, 0x0004,
+        MUL, RB, RB, 0x0002,
+        PUSH, RB,
+        SUB, RA, RA, RB,
+        PUSH, RA,
+        POP, RB,
         0xFAFB
     };
 
     memcpy(logicb->mem->mem, prog, sizeof(prog));
 
-
-    check_mem(logicb->mem);
     start(logicb->cpu, logicb->mem);
     print_logicb(logicb);
 

@@ -8,12 +8,13 @@
 EmuCPU is an emulator for a CPU I designed. 
 
 * It's 16 bit
-* It has 2 registers (A and B) and a Program Counter
-* Its ISA has 6 instructions
+* It has 2 registers (A and B), a Program Counter, a Stack Pointer, a Base Pointer and a Flags register.
+* Its ISA has 9 instructions
 * Program it's stored in a Memory, which size is defined at compile time.
+* It has a Stack, which is also stored in the Memory, SP is defined using ALIGN.
 
 ## What is the ISA?
-The ISA is the instruction set of the CPU. It has 6 instructions, MOV, ADD, SUB, MUL, DIV and INC.
+The ISA is the instruction set of the CPU. It has 6 instructions, MOV, ADD, SUB, MUL, DIV, INC, ALIGN, PUSH, POP.
 Math it's done with using boolean logic, not C math operators.
 
 ## How do I use it?

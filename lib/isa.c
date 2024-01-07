@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "mem.h"
 
 void _MOV(uint16_t *restrict dst, const uint16_t _n) {
     *dst = _n;
@@ -63,4 +64,26 @@ void _DIV(uint16_t *restrict dst, uint16_t *restrict v1, uint16_t *restrict v2, 
         _INC(dst, flags);
         *flags = _save_flags;
     }
+}
+
+int _PUSH(uint16_t *restrict src, uint16_t *restrict bp, mem_t *restrict mem) {
+    mem->mem[*bp] = *src;
+    *bp += 1;
+
+    if (*bp > mem->size) return 1;
+
+    return 0;
+}
+
+int _POP(uint16_t *restrict dst, uint16_t *restrict bp, mem_t *restrict mem) {
+    *bp -= 1;
+    if (*bp == HLT) return 1;
+    *dst = mem->mem[*bp];
+    mem->mem[*bp] = 0;
+
+    return 0;
+}
+
+void _ALIGN(uint16_t *restrict sp, mem_t *restrict mem) {
+    *sp = mem->size;
 }

@@ -10,9 +10,10 @@
 #include "mem.h"
 
 typedef struct _cpu {
-      uint16_t A;
-      uint16_t B;
-      uint16_t PC;
+      uint16_t a;
+      uint16_t b;
+      uint16_t pc;
+      uint16_t sp, bp;
       union flags {
               uint8_t Z;
               uint8_t S;
