@@ -5,7 +5,7 @@
 </p>
 
 ## What is EmuCPU?
-EmuCPU is an emulator for a CPU I designed. 
+EmuCPU is an emulator for a fictitious CPU. 
 
 * It's 16 bit
 * It has 2 registers (A and B), a Program Counter, a Stack Pointer, a Base Pointer and a Flags register.
